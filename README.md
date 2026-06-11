@@ -12,12 +12,13 @@ Next and React.
 - **Full portal mode** — pick a ratio (1:1, 16:9, 4:5) and a position (left,
   right, top, bottom, centre). The portal is scaled to fit with a clear border
   (10% of its shorter side) on a 900-shade background, never distorted.
-- **Cropped portal mode** — bleed the portal off one opposite-pair of edges
-  (top & bottom, or left & right — never a mix), scale it 100–200%, and
-  optionally add an 800-shade multiply gradient overlay from any edge. Off-brand
-  output is made impossible: the opposite pair always stays complete, all six
-  recession steps remain visible, and the solid 900 centre (the focal point)
-  stays centred on canvas.
+- **Cropped portal mode** — bleed the portal off one edge or a corner (one of
+  top/bottom plus one of left/right; opposite edges never pair, so at least two
+  edges always stay complete), scale it 100–200%, and optionally add an
+  800-shade multiply gradient overlay from any edge. Off-brand output is made
+  impossible: all six recession steps remain visible and the solid 900 centre
+  (the focal point) can never be cropped off canvas — the scale auto-clamps if
+  needed.
 - **Palettes** — Red, Blue, Green, Violet. Red leads. These are the only colours
   the tool can produce.
 - **Export** — PNG (lossless, recommended for the hard-edged seams), JPEG (q

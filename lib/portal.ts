@@ -29,7 +29,15 @@ const CENTRE_FRACTION = 0.135;
 
 // Subtle bevel shading (HSL lightness points). The six shade steps do the main
 // work; this only nudges each face so it reads as a 3D surface.
-const EDGE_LIGHTEN = 4; // outer edge of a face vs. its base shade
+//
+// EDGE_LIGHTEN must stay well below a quarter of the smallest inter-shade step,
+// or the bevel cancels the step at ring seams and the layers disappear. The Red
+// palette is the tightest (~8% L between shades): a 4% edge lighten made each
+// ring's inner edge (base-4) meet the next ring's outer edge (base-8+4) at the
+// same value, so Red's seams vanished while the wider-stepped palettes survived.
+// Keeping the bevel span (2x) well under the step lets the steps dominate for
+// every palette, Red included.
+const EDGE_LIGHTEN = 1.5; // outer edge of a face vs. its base shade
 const FACE_BIAS: Record<Edge, number> = {
   top: -3, // ceiling reads a touch darker
   bottom: 3, // floor catches a touch more light

@@ -26,10 +26,10 @@ Next and React.
 
 ## Architecture notes
 
-- `lib/brand.ts` and `lib/portal.ts` are **DOM-free**: the brand constants and
-  the pure SVG-string generator have no browser dependencies, so they run on the
-  server, stay testable, and keep the preview hydration-safe.
-- `app/components/PortalGenerator.tsx` is the only client component. Every
+- `src/lib/brand.ts` and `src/lib/portal.ts` are **DOM-free**: the brand
+  constants and the pure SVG-string generator have no browser dependencies, so
+  they run on the server, stay testable, and keep the preview hydration-safe.
+- `src/components/PortalGenerator.tsx` is the only client component. Every
   interaction with `document`, `window`, `Image`, canvas and blob URLs lives
   inside event handlers — never at module scope or during render.
 - The same generated SVG drives the live preview and the SVG export; raster
@@ -64,5 +64,5 @@ npm run start
 3. Deploy. No environment variables are required.
 
 > Note: the Violet 400 value (`#ed96f5`) is marked **TBC** in the 2026 draft
-> guidelines and may change; update it in `lib/brand.ts` if the final value
+> guidelines and may change; update it in `src/lib/brand.ts` if the final value
 > differs.

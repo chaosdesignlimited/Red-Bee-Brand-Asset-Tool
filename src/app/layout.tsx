@@ -1,5 +1,22 @@
 import type { Metadata } from "next";
+import { Archivo, Inclusive_Sans } from "next/font/google";
 import "./globals.css";
+
+// Inclusive Sans = the brand body face. Archivo = a clean neo-grotesque
+// standing in for the licensed Elza headline face. Self-hosted via next/font.
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-headline-loaded",
+  display: "swap",
+});
+
+const inclusiveSans = Inclusive_Sans({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-body-loaded",
+  display: "swap",
+});
 
 const TITLE = "Red Bee Portal Generator";
 const DESCRIPTION =
@@ -35,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${archivo.variable} ${inclusiveSans.variable}`}>
       <body>{children}</body>
     </html>
   );

@@ -1,16 +1,33 @@
-/* Red Bee Portal Generator — quiet, on-brand UI chrome.
-   White background, black text, square corners everywhere, a single Red 400
-   accent. The artwork is the hero; the controls recede. */
+/* Red Bee Portal Generator — branded UI, modelled on redbeemedia.com and the
+   2026 brand guidelines: Red Bee Red leads, Archivo (Elza stand-in) for bold
+   headlines, Inclusive Sans for body, the red full stop, the square motif, and
+   square corners everywhere. The portal artwork stays the hero. */
 
 :root {
-  --bg: #ffffff;
-  --fg: #000000;
-  --muted: #626262; /* Grey 800 */
-  --line: #c1c1c1; /* Grey 600 */
-  --line-soft: #e0e0e0; /* Grey 500 */
-  --panel: #f5f5f5; /* Grey 400 */
-  --accent: #dc281e; /* Red 400 */
-  --accent-ink: #ffffff;
+  /* Primary Red palette */
+  --red-400: #dc281e;
+  --red-500: #b92118;
+  --red-600: #961b12;
+  --red-700: #73140d;
+  --red-800: #500e07;
+  --red-900: #2d0701;
+  /* Neutrals */
+  --black: #000000;
+  --white: #ffffff;
+  --grey-400: #f5f5f5;
+  --grey-500: #e0e0e0;
+  --grey-600: #c1c1c1;
+  --grey-700: #9c9c9c;
+  --grey-800: #626262;
+  --grey-900: #333333;
+
+  --accent: var(--red-400);
+  --ink: var(--black);
+  --line: var(--grey-600);
+  --line-soft: var(--grey-500);
+
+  --font-headline: var(--font-headline-loaded, 'Archivo'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-body: var(--font-body-loaded, 'Inclusive Sans'), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
 * {
@@ -27,13 +44,19 @@ body {
 
 body {
   min-height: 100vh;
-  color: var(--fg);
-  background: var(--bg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
-    Arial, sans-serif;
+  color: var(--ink);
+  background: var(--white);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  line-height: 1.4;
+  line-height: 1.45;
+}
+
+h1,
+h2,
+h3,
+legend {
+  font-family: var(--font-headline);
 }
 
 button,
@@ -42,41 +65,113 @@ input {
   color: inherit;
 }
 
-.app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 28px 24px 48px;
-}
-
-/* --- Masthead ------------------------------------------------------------- */
-
-.masthead h1 {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.masthead .stop {
+/* The signature red full stop. */
+.stop {
   color: var(--accent);
 }
 
-.masthead p {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: 14px;
+/* --- Hero ----------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--red-900);
+  border-bottom: 4px solid var(--accent);
 }
 
-/* --- Layout --------------------------------------------------------------- */
+.hero-portal {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-portal svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(20px, 3.2vw, 36px) clamp(20px, 3vw, 40px);
+  min-height: clamp(168px, 22vw, 232px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-headline);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+  padding-top: 8px;
+}
+
+.hero h1 {
+  color: var(--white);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  font-size: clamp(28px, 4.4vw, 50px);
+  max-width: 16ch;
+}
+
+.hero-copy p {
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: clamp(13px, 1.3vw, 15px);
+  max-width: 46ch;
+}
+
+/* RED BEE logo mark — a brand-styled interpretation; swap for the official
+   asset from the brand library in production. */
+.brandmark {
+  flex: 0 0 auto;
+  width: clamp(54px, 7vw, 72px);
+  height: clamp(54px, 7vw, 72px);
+  background: var(--accent);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-headline);
+  font-weight: 800;
+  line-height: 0.86;
+  letter-spacing: 0.04em;
+  font-size: clamp(15px, 2vw, 21px);
+}
+
+/* --- Page shell ----------------------------------------------------------- */
+
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 28px clamp(20px, 3vw, 40px) 40px;
+}
 
 .layout {
-  margin-top: 24px;
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 324px 1fr;
   gap: 28px;
   align-items: start;
 }
 
-@media (max-width: 860px) {
+@media (max-width: 880px) {
   .layout {
     grid-template-columns: 1fr;
   }
@@ -87,7 +182,7 @@ input {
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .group {
@@ -96,11 +191,13 @@ input {
 }
 
 .group legend {
-  padding: 0 6px;
+  padding: 0 7px 0 0;
+  margin-left: -1px;
   font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  color: var(--ink);
 }
 
 .row {
@@ -115,14 +212,14 @@ input {
   gap: 5px;
   flex: 1;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--grey-800);
 }
 
 .field input {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--white);
 }
 
 .field input:focus-visible,
@@ -134,7 +231,7 @@ button:focus-visible {
 .hint {
   margin-top: 8px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--grey-800);
 }
 
 /* Palette swatches */
@@ -150,7 +247,7 @@ button:focus-visible {
   gap: 8px;
   padding: 8px 10px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--white);
   cursor: pointer;
   font-size: 13px;
 }
@@ -164,7 +261,8 @@ button:focus-visible {
 
 .swatch.active {
   border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--accent);
+  box-shadow: inset 0 0 0 2px var(--accent);
+  font-weight: 700;
 }
 
 /* Segmented button groups */
@@ -183,7 +281,7 @@ button:focus-visible {
 .segmented button {
   flex: 1;
   padding: 9px 10px;
-  background: #fff;
+  background: var(--white);
   border: none;
   border-right: 1px solid var(--line);
   cursor: pointer;
@@ -203,8 +301,9 @@ button:focus-visible {
 
 .segmented button.active {
   background: var(--accent);
-  color: var(--accent-ink);
+  color: var(--white);
   border-color: var(--accent);
+  font-weight: 700;
 }
 
 .toggle {
@@ -221,7 +320,7 @@ button:focus-visible {
   accent-color: var(--accent);
 }
 
-input[type="range"] {
+input[type='range'] {
   flex: 1;
   accent-color: var(--accent);
 }
@@ -243,16 +342,16 @@ input[type="range"] {
 
 .dl {
   padding: 11px 12px;
-  border: 1px solid var(--fg);
-  background: #fff;
+  border: 1px solid var(--ink);
+  background: var(--white);
   cursor: pointer;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .dl.primary {
   background: var(--accent);
-  color: var(--accent-ink);
+  color: var(--white);
   border-color: var(--accent);
   display: flex;
   align-items: center;
@@ -286,19 +385,18 @@ input[type="range"] {
 }
 
 .canvas-wrap {
-  background: var(--panel);
+  background: var(--grey-400);
   border: 1px solid var(--line-soft);
-  padding: 24px;
+  padding: clamp(16px, 2.5vw, 28px);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 320px;
+  min-height: 340px;
 }
 
 .preview {
   margin: 0 auto;
   line-height: 0;
-  /* Subtle frame so a near-black portal edge reads against the grey stage. */
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
 }
 
@@ -313,7 +411,7 @@ input[type="range"] {
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--grey-800);
 }
 
 .stage-meta .busy {
@@ -322,11 +420,55 @@ input[type="range"] {
 }
 
 .notes {
-  border: 1px solid var(--accent);
+  border-left: 3px solid var(--accent);
+  background: var(--grey-400);
   padding: 10px 12px;
   font-size: 13px;
 }
 
 .notes p + p {
   margin-top: 6px;
+}
+
+/* --- Footer --------------------------------------------------------------- */
+
+.brandfoot {
+  background: var(--red-900);
+  color: var(--white);
+  border-top: 4px solid var(--accent);
+}
+
+.brandfoot-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 26px clamp(20px, 3vw, 40px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brandfoot .mmf {
+  font-family: var(--font-headline);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.0;
+  font-size: clamp(20px, 2.6vw, 30px);
+}
+
+.brandfoot a {
+  color: var(--white);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.brandfoot a:hover {
+  border-bottom-color: var(--accent);
+}
+
+.brandfoot .meta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
 }

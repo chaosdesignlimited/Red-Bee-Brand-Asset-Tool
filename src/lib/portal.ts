@@ -224,8 +224,17 @@ function corners(rect: Rect) {
   };
 }
 
-// Emit the portal (defs + shapes) in absolute canvas coordinates.
-function buildPortal(family: Family, W: number, H: number, ox: number, oy: number, centre: number): PortalParts {
+// Emit the portal (defs + shapes) in absolute canvas coordinates. idPrefix
+// namespaces gradient IDs so several inline portals can coexist in one document.
+function buildPortal(
+  family: Family,
+  W: number,
+  H: number,
+  ox: number,
+  oy: number,
+  centre: number,
+  idPrefix: string,
+): PortalParts {
   const defs: string[] = [];
   const body: string[] = [];
   const cx = ox + W / 2;
@@ -250,7 +259,7 @@ function buildPortal(family: Family, W: number, H: number, ox: number, oy: numbe
     ];
 
     faces.forEach((face) => {
-      const gid = `r${k}${face.id[0]}`;
+      const gid = `${idPrefix}r${k}${face.id[0]}`;
       const bias = FACE_BIAS[face.id];
       const outerCol = adjustLightness(base, EDGE_LIGHTEN + bias);
       const innerCol = adjustLightness(base, -EDGE_LIGHTEN + bias);
@@ -309,21 +318,25 @@ export function gradientAxis(g: GradientSpec, cw: number, ch: number) {
   }
 }
 
-function gradientOverlaySvg(g: GradientSpec, cw: number, ch: number): string {
+function gradientOverlaySvg(g: GradientSpec, cw: number, ch: number, idPrefix: string): string {
   const a = gradientAxis(g, cw, ch);
+  const id = `${idPrefix}overlay`;
   return (
-    `<defs><linearGradient id="overlay" gradientUnits="userSpaceOnUse" x1="${a.x1}" y1="${a.y1}" x2="${a.x2}" y2="${a.y2}">` +
+    `<defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${a.x1}" y1="${a.y1}" x2="${a.x2}" y2="${a.y2}">` +
     `<stop offset="0" stop-color="${g.color}" stop-opacity="${g.startOpacity}"/>` +
     `<stop offset="1" stop-color="${g.color}" stop-opacity="0"/>` +
     `</linearGradient></defs>` +
-    `<rect x="0" y="0" width="${cw}" height="${ch}" fill="url(#overlay)" style="mix-blend-mode:multiply"/>`
+    `<rect x="0" y="0" width="${cw}" height="${ch}" fill="url(#${id})" style="mix-blend-mode:multiply"/>`
   );
 }
 
-export function buildScene(cfg: PortalConfig): Scene {
+// idPrefix namespaces the SVG's internal gradient IDs. The default suits a
+// single inline preview; pass a distinct prefix for any additional inline SVG
+// (e.g. the branded hero) so their gradients don't collide in the DOM.
+export function buildScene(cfg: PortalConfig, idPrefix = 'p'): Scene {
   const { canvasW: cw, canvasH: ch } = cfg;
   const geo = cfg.mode === 'full' ? fullGeometry(cfg) : croppedGeometry(cfg);
-  const portal = buildPortal(cfg.family, geo.portalW, geo.portalH, geo.ox, geo.oy, geo.centre);
+  const portal = buildPortal(cfg.family, geo.portalW, geo.portalH, geo.ox, geo.oy, geo.centre, idPrefix);
 
   // Background is the family's 900 shade. It only shows through where the
   // portal does not cover (full-mode clear space, or rounding hairlines).
@@ -334,7 +347,7 @@ export function buildScene(cfg: PortalConfig): Scene {
 
   const baseSvg = `${core}</svg>`;
   const grad = gradientSpec(cfg);
-  const svg = grad ? `${core}${gradientOverlaySvg(grad, cw, ch)}</svg>` : baseSvg;
+  const svg = grad ? `${core}${gradientOverlaySvg(grad, cw, ch, idPrefix)}</svg>` : baseSvg;
 
   return { width: cw, height: ch, svg, baseSvg, gradient: grad, note: geo.note };
 }

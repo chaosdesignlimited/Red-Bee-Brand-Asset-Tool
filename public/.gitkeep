@@ -1,0 +1,3 @@
+# Keeps the public/ directory in version control (git does not track empty
+# folders). Drop static assets here — favicons, og-image, robots.txt — and
+# they'll be served from the site root, e.g. /robots.txt.

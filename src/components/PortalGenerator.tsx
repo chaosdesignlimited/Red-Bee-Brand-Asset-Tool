@@ -28,6 +28,11 @@ const OPPOSITE_EDGE: Record<Edge, Edge> = {
   right: 'left',
 };
 
+// Raster exports can render at a multiple of the canvas size for sharper output.
+// The generator is vector, so the scene is rebuilt at the larger dimensions —
+// this is true resolution, not an upscale of the 1x bitmap.
+const EXPORT_SCALES = [1, 2];
+
 const SIZE_MIN = 100;
 const SIZE_MAX = 8000;
 
@@ -125,6 +130,7 @@ export default function PortalGenerator() {
   const [gradientEdge, setGradientEdge] = useState<Edge>('bottom');
   const [edgeNote, setEdgeNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [exportScale, setExportScale] = useState(1);
 
   const canvasW = clampSize(widthInput);
   const canvasH = clampSize(heightInput);
@@ -167,16 +173,21 @@ export default function PortalGenerator() {
 
   async function handleExport(kind: 'png' | 'jpeg' | 'svg') {
     if (busy) return;
-    const filename = `redbee-portal-${family}-${canvasW}x${canvasH}.${kind === 'jpeg' ? 'jpg' : kind}`;
+    const outW = canvasW * exportScale;
+    const outH = canvasH * exportScale;
+    const filename = `redbee-portal-${family}-${outW}x${outH}.${kind === 'jpeg' ? 'jpg' : kind}`;
     setBusy(true);
     try {
       await nextFrame();
+      // Rebuild the scene at the export dimensions so the vector renders at full
+      // resolution (the composition is proportional, so it matches the preview).
+      const exportScene = exportScale === 1 ? scene : buildScene({ ...config, canvasW: outW, canvasH: outH });
       if (kind === 'svg') {
-        downloadBlob(new Blob([scene.svg], { type: 'image/svg+xml;charset=utf-8' }), filename);
+        downloadBlob(new Blob([exportScene.svg], { type: 'image/svg+xml;charset=utf-8' }), filename);
       } else if (kind === 'png') {
-        downloadBlob(await rasterize(scene, 'image/png'), filename);
+        downloadBlob(await rasterize(exportScene, 'image/png'), filename);
       } else {
-        downloadBlob(await rasterize(scene, 'image/jpeg', 0.92), filename);
+        downloadBlob(await rasterize(exportScene, 'image/jpeg', 0.92), filename);
       }
     } catch (err) {
       setEdgeNote(err instanceof Error ? err.message : 'Export failed');
@@ -368,6 +379,23 @@ export default function PortalGenerator() {
 
           <fieldset className="group export">
             <legend>Export</legend>
+            <div className="segmented" role="group" aria-label="Export resolution">
+              {EXPORT_SCALES.map((f) => (
+                <button
+                  key={f}
+                  type="button"
+                  className={exportScale === f ? 'active' : ''}
+                  aria-pressed={exportScale === f}
+                  onClick={() => setExportScale(f)}
+                >
+                  {f}×
+                </button>
+              ))}
+            </div>
+            <p className="hint">
+              Output: {canvasW * exportScale} × {canvasH * exportScale} px
+              {exportScale > 1 ? ` (${exportScale}× the canvas)` : ''}
+            </p>
             <button type="button" className="dl primary" disabled={busy} onClick={() => handleExport('png')}>
               Download PNG <span className="tag">best quality</span>
             </button>

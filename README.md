@@ -22,8 +22,11 @@ Next and React.
 - **Palettes** — Red, Blue, Green, Violet. Red leads. These are the only colours
   the tool can produce.
 - **Export** — PNG (lossless, recommended for the hard-edged seams), JPEG (q
-  0.92, for platforms that require it), and SVG (vector, true output size).
-  Filenames follow `redbee-portal-{family}-{width}x{height}.{png|jpg|svg}`.
+  0.92, for platforms that require it), and SVG (vector, true output size). A
+  resolution control (1× / 2×) rebuilds the scene at the larger size so raster
+  exports are genuinely sharper, not upscaled. Filenames follow
+  `redbee-portal-{family}-{width}x{height}.{png|jpg|svg}` using the actual
+  exported dimensions.
 
 ## Architecture notes
 

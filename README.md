@@ -59,8 +59,8 @@ npm run start
 
 1. Push this repository to GitHub/GitLab/Bitbucket.
 2. In Vercel, **Import** the repository. Framework preset: **Next.js** (zero
-   config). If this folder is nested inside a larger repo, set the project
-   **Root Directory** to `red-bee-portal-tool`.
+   config). The project lives at the repository root, so no **Root Directory**
+   override is needed.
 3. Deploy. No environment variables are required.
 
 > Note: the Violet 400 value (`#ed96f5`) is marked **TBC** in the 2026 draft

@@ -16,6 +16,14 @@ const RATIOS: Ratio[] = ['1:1', '16:9', '4:5'];
 const POSITIONS: FullPosition[] = ['left', 'right', 'top', 'bottom', 'centre'];
 const EDGES: Edge[] = ['top', 'right', 'bottom', 'left'];
 
+// Crop edges are constrained to a single opposite-pair: either the vertical
+// axis (top & bottom) or the horizontal axis (left & right), never a mix. This
+// always leaves the other pair of edges complete and keeps the portal centred.
+const CROP_PAIRS: { label: string; edges: Edge[] }[] = [
+  { label: 'Top & Bottom', edges: ['top', 'bottom'] },
+  { label: 'Left & Right', edges: ['left', 'right'] },
+];
+
 const SIZE_MIN = 100;
 const SIZE_MAX = 8000;
 
@@ -107,7 +115,7 @@ export default function PortalGenerator() {
   const [mode, setMode] = useState<'full' | 'cropped'>('full');
   const [ratio, setRatio] = useState<Ratio>('1:1');
   const [position, setPosition] = useState<FullPosition>('centre');
-  const [cropEdges, setCropEdges] = useState<Edge[]>(['right']);
+  const [cropEdges, setCropEdges] = useState<Edge[]>(['left', 'right']);
   const [scale, setScale] = useState(1.4);
   const [gradientOn, setGradientOn] = useState(false);
   const [gradientEdge, setGradientEdge] = useState<Edge>('bottom');
@@ -135,22 +143,6 @@ export default function PortalGenerator() {
 
   // Pure: safe to compute during render (no DOM access).
   const scene = useMemo<Scene>(() => buildScene(config), [config]);
-
-  function toggleEdge(edge: Edge) {
-    setCropEdges((prev) => {
-      if (prev.includes(edge)) {
-        const next = prev.filter((e) => e !== edge);
-        setEdgeNote(null);
-        return next.length ? next : prev; // keep at least one edge cropped
-      }
-      if (prev.length >= 2) {
-        setEdgeNote('At least one complete portal edge must remain visible.');
-        return prev;
-      }
-      setEdgeNote(null);
-      return [...prev, edge];
-    });
-  }
 
   function normalizeSize(which: 'w' | 'h') {
     if (which === 'w') setWidthInput(String(clampSize(widthInput)));
@@ -297,20 +289,23 @@ export default function PortalGenerator() {
             <>
               <fieldset className="group">
                 <legend>Crop edges</legend>
-                <div className="segmented wrap">
-                  {EDGES.map((e) => (
-                    <button
-                      key={e}
-                      type="button"
-                      className={cropEdges.includes(e) ? 'active' : ''}
-                      aria-pressed={cropEdges.includes(e)}
-                      onClick={() => toggleEdge(e)}
-                    >
-                      {e}
-                    </button>
-                  ))}
+                <div className="segmented">
+                  {CROP_PAIRS.map((p) => {
+                    const active = p.edges.every((e) => cropEdges.includes(e));
+                    return (
+                      <button
+                        key={p.label}
+                        type="button"
+                        className={active ? 'active' : ''}
+                        aria-pressed={active}
+                        onClick={() => setCropEdges(p.edges)}
+                      >
+                        {p.label}
+                      </button>
+                    );
+                  })}
                 </div>
-                <p className="hint">Choose one or two edges to bleed off.</p>
+                <p className="hint">Bleeds off one axis — top and bottom, or left and right.</p>
               </fieldset>
 
               <fieldset className="group">
